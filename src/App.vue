@@ -1,28 +1,52 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Menu v-bind:itemsMenu="itemsMenu" @show-content="showContent"/>
+    <Users :users="users" @delete-user="deleteUser"/>
+    <Posts :posts="posts"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Menu from './components/Menu.vue';
+import Users from './components/Users.vue';
+import Posts from './components/Posts.vue';
+import axios from 'axios';
 
 export default {
   name: 'app',
+  data(){
+    return{
+      itemsMenu: ["Users", "Posts"],
+      users: [],
+      posts: []
+    }
+  },
   components: {
-    HelloWorld
+    Menu,
+    Users,
+    Posts
+  },
+  methods:{
+    showContent(item) {
+      this.users = [];
+      this.posts = [];
+      // eslint-disable-next-line no-undef
+      axios
+         .get('http://jsonplaceholder.typicode.com/'+item+'/')
+         .then(response => (
+                 this[item.toLowerCase()] = response.data
+         ))
+         .catch(error => alert(error));
+    },
+    deleteUser(index){
+      this.users.splice(index, 1);
+    }
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
 }
 </style>
